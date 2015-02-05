@@ -5,9 +5,6 @@ var toggleTime = 500; //millisecs
 
 var staticSite = __dirname + '/public';
 
-// start the serial reader in the same process
-
-
 var gpio = require("pi-gpio");
 var hwPins=[7,11,12,13,15,16,18,22]; // Physical pins as listed at: https://www.npmjs.com/package/pi-gpio
 var gpios={};
