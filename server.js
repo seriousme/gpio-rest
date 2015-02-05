@@ -20,14 +20,6 @@ for (var pin in hwPins) {
     gpioList.push(maxGpio);
 }
 
-// open gpio's as input for starters
-
-
-// write
-// read
-// setDirection
-// 
-
 function togglePin(hwPin){
   gpio.open(hwPin, "output", function(err) {    // Open pin for output 
     if (err) {
