@@ -1,6 +1,6 @@
 var host = process.env.IP || 'localhost';
 var port = process.env.PORT || 8080;
-var toggleTime = 500 //millisecs
+var toggleTime = 500; //millisecs
 
 
 var staticSite = __dirname + '/public';
@@ -68,27 +68,28 @@ router.use(function(req, res, next) {
 
 router.route('/gpios')
     .get(function (req,res,next) {
-        res.json({ 'gpios': gpioList })
+        res.json({ 'gpios': gpioList });
     });
 
 router.route('/gpios/:gpio_id')
     .get(function (req,res,next) {
-        var gpio_id=req.params.gpio_id
+        var gpio_id=req.params.gpio_id;
         if (gpios[gpio_id ]) {
-            res.json({ 'gpio': gpios[gpio_id ]})
+            togglePin(gpios[gpio_id].gpio_pin);
+            res.json({ 'gpio': gpios[gpio_id ]});
         }
         else {
-            res.json({ 'error' : "invalid GPIO id"})
+            res.json({ 'error' : "invalid GPIO id"});
         }
         
     })
     .put(function (req,res,next) {
-        var gpio_id=req.params.gpio_id
+        var gpio_id=req.params.gpio_id;
         if (gpios[gpio_id ]) {
-            res.json({ 'gpio': gpios[gpio_id ]})
+            res.json({ 'gpio': gpios[gpio_id ]});
         }
         else {
-            res.json({ 'error' : "invalid GPIO id"})
+            res.json({ 'error' : "invalid GPIO id"});
         }
     });
 
@@ -99,9 +100,9 @@ router.get('/', function(req, res) {
 
 
 app.use('/', express.static(staticSite));
-app.use('/api', router )
+app.use('/api', router );
 
 if (! process.env.C9_PID) {
-    console.log('Running at http://'+ host +':' + port)
+    console.log('Running at http://'+ host +':' + port);
 }
 app.listen(port, function() { console.log('Listening')});
