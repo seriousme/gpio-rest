@@ -12,4 +12,5 @@ cd ~/gpio-rest
 npm install express
 npm install pi-gpio
 
+# now edit public/swagger.js and change the "host" field.
 # to run: node server.js

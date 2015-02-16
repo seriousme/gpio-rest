@@ -5,7 +5,7 @@ var port = process.env.PORT || 8080;
 var gpioService = require("./gpioService.js");
 
 var staticSite = __dirname + '/public';
-var swaggerUI = __dirname + '/public/swagger-ui/dist';
+var swaggerUI = __dirname + '/public/swag-ui';
 
 var express = require('express');
 var app = express();

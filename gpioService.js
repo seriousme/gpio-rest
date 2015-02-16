@@ -20,7 +20,7 @@ for (var pin in hwPins) {
 }
 
 exports.gpioToggle = function gpioToggle(gpioID){
-      if (gpios[gpioID ]) {
+    if (gpios[gpioID ]) {
         var hwPin= gpios[gpioID].gpioPin;
         gpio.open(hwPin, "output", function(err) {    // Open pin for output 
           if (err) {
