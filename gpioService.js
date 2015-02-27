@@ -9,17 +9,21 @@ if (process.env.PORT) {
 else { 
 	gpio=require("pi-gpio");
 }
-var hwPins=[7,11,12,13,15,16,18,22]; // Physical pins as listed at: https://www.npmjs.com/package/pi-gpio
+
+// Physical pins as listed at: https://www.npmjs.com/package/pi-gpio
+// pin numbers will start at 1
+var hwPins=[undefined,7,11,12,13,15,16,18,22]; 
 
 
 function makeGpio(pin,i){
-	return ({ 'id':i+1,'gpioPin':pin });
+	return ({ 'id':i,'gpioPin':pin });
 }
 
 var gpios=hwPins.map(makeGpio);
 
+
 function gpioToggle(gpioID){
-    if (gpios[gpioID ]) {
+    if (gpios[ gpioID ]) {
       var hwPin = gpios[gpioID].gpioPin;
   		try {
   			async.series([
@@ -56,7 +60,7 @@ function gpioToggle(gpioID){
   			return (gpios[gpioID]);
   		}
   		catch (e) {
-  			return ({'error': "operation on hwpin " + hwPin + "failed: "} );
+  			return ({'error': "Operation on hwpin " + hwPin + " failed: "} );
   		}
     }
     else {
