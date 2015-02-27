@@ -1,52 +1,73 @@
-var toggleTime = 500; //millisecs
+var async = require('async');
 
 
 var gpio;
-if (! process.env.C9_PID) {
-  gpio=require("pi-gpio");
+if (process.env.PORT) {	
+	gpio=require("./pi-gpio-stub");	// not running on a PI
+  
 }
 else { 
-  gpio=require("./pi-gpio-stub");
+	gpio=require("pi-gpio");
 }
 var hwPins=[7,11,12,13,15,16,18,22]; // Physical pins as listed at: https://www.npmjs.com/package/pi-gpio
-var gpios={};
-var gpioList=[];
 
-var maxGpio=0; //relays are numbered from 1 to 8
-for (var pin in hwPins) {
-    maxGpio++;
-    gpios[maxGpio]={ 'id':maxGpio,'gpioPin':hwPins[pin] };
-    gpioList.push(maxGpio);
+
+function makeGpio(pin,i){
+	return ({ 'id':i+1,'gpioPin':pin });
 }
 
-exports.gpioToggle = function gpioToggle(gpioID){
+var gpios=hwPins.map(makeGpio);
+
+function gpioToggle(gpioID){
     if (gpios[gpioID ]) {
-        var hwPin= gpios[gpioID].gpioPin;
-        gpio.open(hwPin, "output", function(err) {    // Open pin for output 
-          if (err) {
-              return ({"error":"Opening hw pin " + hwPin + " failed"});
-          }
-          gpio.write(hwPin, 1, function( err) {           // Set pin high (1)
-              if (err) {
-                  return ({"error":"Setting pin " + hwPin + " failed"});
-              }
-              setTimeout(function (){                     // wait for toggleTime milliseconds and then execute
-                  gpio.write(hwPin, 0, function() {       // Set pin low (0)
-                      if (err) {
-                          return ({"error":"Setting pin " + hwPin + " failed"});
-                      }
-                      gpio.close(hwPin);                  // Close pin 
-                  });
-              },toggleTime);
-              });
-        });
-        return (gpios[gpioID]);
+      var hwPin = gpios[gpioID].gpioPin;
+  		try {
+  			async.series([
+  				function ( cb ){
+  					gpio.open(hwPin, "output");
+  					cb(null);
+  				},
+  				function ( cb ){
+  					gpio.write(hwPin, 1);
+  					cb(null);
+  				},
+  				function ( cb ){
+  					setTimeout(cb, 500);  //millisecs
+  					cb();
+  				},
+  				function ( cb ){
+  					gpio.write(hwPin, 0);
+  					cb();
+  				},
+  				function ( cb ){
+  					gpio.close(hwPin);
+  					cb();
+  				},
+  				function ( cb ){
+  					gpio.close(hwPin);
+  					cb();
+  				}],
+  				function (err){
+  					if (err){
+  						throw err
+  					}
+  				}
+  			);
+  			return (gpios[gpioID]);
+  		}
+  		catch (e) {
+  			return ({'error': "operation on hwpin " + hwPin + "failed: "} );
+  		}
     }
     else {
       return ({ 'error' : "Invalid ID supplied"});
     }
 };
 
-exports.gpioList = function gpioList(){
+
+function gpioList(){
     return({'gpios': gpios});
 };
+
+exports.gpioList = gpioList
+exports.gpioToggle = gpioToggle
