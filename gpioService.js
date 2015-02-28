@@ -23,7 +23,7 @@ var gpios=hwPins.map(makeGpio);
 
 
 function gpioToggle(gpioID){
-    if (gpios[ gpioID ]) {
+    if (gpios[ gpioID ] && gpios[gpioID].gpioPin ) {
       var hwPin = gpios[gpioID].gpioPin;
   		try {
   			async.series([
